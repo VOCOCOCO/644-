@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Колесо фортуны</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f0f0f0;
+            margin: 0;
+        }
+        .wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 10px solid #ddd;
+            background: conic-gradient(#ff6f61 0% 25%, #4e74ab 25% 50%, #6dbf4f 50% 75%, #ffcc00 75% 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #4e74ab;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="wheel" id="wheel">
+            <div class="spinner" id="spinner"></div>
+        </div>
+        <button id="spinBtn">Крутить колесо</button>
+    </div>
+
+    <script>
+        let isPaid = false; // Переменная для проверки оплаты
+        let spinning = false;
+
+        // Функция для вращения колеса
+        function spinWheel() {
+            if (spinning || !isPaid) return;
+            spinning = true;
+            const wheel = document.getElementById('wheel');
+            let rotation = Math.floor(Math.random() * 360) + 3600; // вращение минимум 10 оборотов
+            wheel.style.transition = 'transform 4s ease-out';
+            wheel.style.transform = `rotate(${rotation}deg)`;
+
+            setTimeout(() => {
+                spinning = false;
+                alert("Поздравляем! Вы выиграли подарок!");
+            }, 4000);
+        }
+
+        // Обработчик нажатия на кнопку
+        document.getElementById('spinBtn').addEventListener('click', spinWheel);
+
+        // Эмуляция оплаты
+        function markAsPaid() {
+            isPaid = true;
+            document.getElementById('spinBtn').disabled = false; // Активируем кнопку
+        }
+
+        // Для теста: активируем оплату через 5 секунд
+        setTimeout(markAsPaid, 5000);
+    </script>
+</body>
+</html>
