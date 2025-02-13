@@ -3,90 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Колесо фортуны</title>
+    <title>Магазин подарков</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: #000000;
+            color: rgb(255, 255, 255);
+            text-align: center;
+        }
+        .tab {
+            background: #222;
+            padding: 10px;
+            font-size: 18px;
+            color: rgb(0, 0, 0);
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #f0f0f0;
-            margin: 0;
-        }
-        .wheel {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            border: 10px solid #ddd;
-            background: conic-gradient(#ff6f61 0% 25%, #4e74ab 25% 50%, #6dbf4f 50% 75%, #ffcc00 75% 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #fff;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            border-bottom: 2px solid #3498db;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
-        button {
-            padding: 10px 20px;
-            margin-top: 20px;
-            background-color: #4e74ab;
-            color: white;
-            border: none;
+        .tab div {
+            margin: 0 20px;
+            padding: 10px;
+        }
+        .tab div.active {
+            background-color: #3498db;
             border-radius: 5px;
-            cursor: pointer;
         }
-        button:disabled {
-            background-color: #ccc;
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 10px;
+        }
+        .gift {
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            width: 45%;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 0 10px rgb(199, 253, 19);
+            transition: background 0.3s ease;
+        }
+        .gift img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+        }
+        .price {
+            color: gold;
+            font-size: 18px;
+            margin-top: 5px;
+        }
+        .label {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #3498db;
+            color: rgb(45, 21, 21);
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 5px;
+        }
+        @media (max-width: 1000px) {
+            .gift {
+                width: 33%;
+            }
         }
     </style>
 </head>
 <body>
-    <div>
-        <div class="wheel" id="wheel">
-            <div class="spinner" id="spinner"></div>
-        </div>
-        <button id="spinBtn">Крутить колесо</button>
+    <div class="tab">
+        <div id="storeTab" class="active">Стикеры</div>
+        <div id="collectionTab">Коллекция</div>
     </div>
 
+    <div id="storeContainer" class="container">
+        <div class="gift" data-id="mammoth" data-price="100" data-bg="#1C1C1C">
+            <div class="label">Редкий</div>
+            <img src="photo_2025-02-03_17-24-09.jpg" alt="VOCO">
+            <div class="price">⭐️ 100</div>
+        </div>
+        <div class="gift" data-id="durov" data-price="70" data-bg="#1C1C1C">
+            <div class="label">Редкий</div>
+            <img src="photo_2025-02-03_17-24-47.jpg" alt="VOCO">
+            <div class="price">⭐️ 70</div>
+        </div>
+        <div class="gift" data-id="dog" data-price="25" data-bg="#1C1C1C">
+            <div class="label">Редкий</div>
+            <img src="photo_2025-02-02_22-21-28.jpg" alt="VOCO">
+            <div class="price">⭐️ 25</div>
+        </div>
+        <div class="gift" data-id="mic" data-price="10" data-bg="#1C1C1C">
+            <img src="photo_2025-02-02_22-16-03.jpg" alt="VOCO">
+            <div class="price">⭐️ 10</div>
+        </div>
+        <div class="gift" data-id="cap" data-price="150" data-bg="#1C1C1C">
+            <div class="label">Редкий</div>
+            <img src="photo_2025-02-03_17-40-00.jpg" alt="VOCO">
+            <div class="price">⭐️ 150</div>
+        </div>
+        <div class="gift" data-id="Doodle" data-price="25" data-bg="#4630C0">
+            <div class="label">Изумрудный</div>
+            <img src="photo_2025-02-04_20-07-09.jpg" alt="VOCO">
+            <div class="price">⭐️ 25</div>
+        </div>
+    </div>
+
+    <div id="collectionContainer" class="container" style="display:none;"></div>
+
     <script>
-        let isPaid = false; // Переменная для проверки оплаты
-        let spinning = false;
+        let tg = window.Telegram.WebApp;
+        tg.expand();
 
-        // Функция для вращения колеса
-        function spinWheel() {
-            if (spinning || !isPaid) return;
-            spinning = true;
-            const wheel = document.getElementById('wheel');
-            let rotation = Math.floor(Math.random() * 360) + 3600; // вращение минимум 10 оборотов
-            wheel.style.transition = 'transform 4s ease-out';
-            wheel.style.transform = `rotate(${rotation}deg)`;
+        // Установка фона для каждого подарка
+        document.querySelectorAll(".gift").forEach(gift => {
+            let bgColor = gift.dataset.bg;
+            if (bgColor) {
+                gift.style.background = bgColor;
+            }
+        });
 
-            setTimeout(() => {
-                spinning = false;
-                alert("Поздравляем! Вы выиграли подарок!");
-            }, 4000);
+        function generateRandomNumber() {
+            return Math.floor(10000 + Math.random() * 90000);
         }
 
-        // Обработчик нажатия на кнопку
-        document.getElementById('spinBtn').addEventListener('click', spinWheel);
+        let purchasedGifts = JSON.parse(localStorage.getItem('purchasedGifts')) || [];
 
-        // Эмуляция оплаты
-        function markAsPaid() {
-            isPaid = true;
-            document.getElementById('spinBtn').disabled = false; // Активируем кнопку
+        document.querySelectorAll(".gift").forEach(gift => {
+            gift.addEventListener("click", async function() {
+                let id = gift.dataset.id;
+                let price = gift.dataset.price;
+                let giftNumber = generateRandomNumber();
+
+                purchasedGifts.push({ gift_id: id, gift_number: giftNumber });
+                localStorage.setItem('purchasedGifts', JSON.stringify(purchasedGifts));
+
+                await tg.sendData(JSON.stringify({ gift_id: id, price: price, gift_number: giftNumber }));
+            });
+        });
+
+        tg.onEvent('onPaymentSuccess', () => {
+            alert("Спасибо за покупку! Все подарки хранятся у администратора.");
+        });
+
+        // Переключение вкладок
+        const storeTab = document.getElementById('storeTab');
+        const collectionTab = document.getElementById('collectionTab');
+        const storeContainer = document.getElementById('storeContainer');
+        const collectionContainer = document.getElementById('collectionContainer');
+
+        storeTab.addEventListener('click', () => {
+            storeTab.classList.add('active');
+            collectionTab.classList.remove('active');
+            storeContainer.style.display = 'flex';
+            collectionContainer.style.display = 'none';
+        });
+
+        collectionTab.addEventListener('click', () => {
+            collectionTab.classList.add('active');
+            storeTab.classList.remove('active');
+            storeContainer.style.display = 'none';
+            collectionContainer.style.display = 'flex';
+            loadCollection();
+        });
+
+        function loadCollection() {
+            collectionContainer.innerHTML = '';
+            purchasedGifts.forEach(gift => {
+                const giftElement = document.createElement('div');
+                giftElement.classList.add('gift');
+                giftElement.innerHTML = `
+                    <div class="label">${gift.gift_number}</div>
+                    <img src="photo_2025-02-03_17-24-09.jpg" alt="VOCO">
+                    <div class="price">⭐️ ${gift.gift_id}</div>
+                `;
+                collectionContainer.appendChild(giftElement);
+            });
         }
-
-        // Для теста: активируем оплату через 5 секунд
-        setTimeout(markAsPaid, 5000);
     </script>
 </body>
 </html>
