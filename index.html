@@ -46,16 +46,55 @@
             position: relative;
             box-shadow: 0 0 10px rgb(199, 253, 19);
             transition: background 0.3s ease;
+            animation: pulse 2s infinite;
         }
         .gift img {
             width: 100px;
             height: 100px;
             border-radius: 10px;
+            display: block;
+            margin: 0 auto;
+            position: relative;
         }
         .price {
-            color: gold;
+            color: rgb(255, 187, 0); /* Золотой цвет текста */
             font-size: 18px;
-            margin-top: 5px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.6); /* Затемнённый фон */
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            overflow: hidden;
+        }
+        .price::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 15px;
+            border: 1px solid transparent;
+            background: linear-gradient(90deg, rgba(255, 200, 0, 0.8), rgba(255, 140, 0, 0.8));
+            mask: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8));
+            -webkit-mask: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8));
+        }
+        .price::after {
+            content: "";
+            position: absolute;
+            inset: -3px;
+            border-radius: 15px;
+            background: url('stars.png'); /* Фон со звёздами */
+            opacity: 0.8;
+            animation: falling-stars 3s linear infinite;
+        }
+        @keyframes falling-stars {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 0 100%;
+            }
         }
         .label {
             position: absolute;
@@ -67,9 +106,26 @@
             font-size: 12px;
             border-radius: 5px;
         }
-        @media (max-width: 1000px) {
+        .tirage {
+            color: rgb(111, 255, 0);
+            font-size: 16px;
+            margin-top: 5px;
+            font-family: Arial;
+        }
+        @media (max-width: 100px) {
             .gift {
-                width: 33%;
+                width: 5%;
+            }
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            13% {
+                transform: scale(1.003);
+            }
+            0.7% {
+                transform: scale(1);
             }
         }
     </style>
@@ -77,7 +133,7 @@
 <body>
     <div class="tab">
         <div id="storeTab" class="active">Стикеры</div>
-        <div id="collectionTab">Коллекция</div>
+        <div id="tirageTab">Тиражи</div>
     </div>
 
     <div id="storeContainer" class="container">
@@ -112,13 +168,42 @@
         </div>
     </div>
 
-    <div id="collectionContainer" class="container" style="display:none;"></div>
+    <div id="tirageContainer" class="container" style="display:none;">
+        <div class="gift" data-id="mammoth" data-bg="#1C1C1C">
+            <div class="label">Редкий</div>
+            <img src="photo_2025-02-03_17-24-09.jpg" alt="VOCO">
+            <div class="tirage">1 из 100</div>
+        </div>
+        <div class="gift" data-id="durov" data-bg="#1C1C1C">
+            <div class="label">Редкий</div>
+            <img src="photo_2025-02-03_17-24-47.jpg" alt="VOCO">
+            <div class="tirage">1 из 100</div>
+        </div>
+        <div class="gift" data-id="dog" data-bg="#1C1C1C">
+            <div class="label">Редкий</div>
+            <img src="photo_2025-02-02_22-21-28.jpg" alt="VOCO">
+            <div class="tirage">1 из 100</div>
+        </div>
+        <div class="gift" data-id="mic" data-bg="#1C1C1C">
+            <img src="photo_2025-02-02_22-16-03.jpg" alt="VOCO">
+            <div class="tirage">1 из 100</div>
+        </div>
+        <div class="gift" data-id="cap" data-bg="#1C1C1C">
+            <div class="label">Редкий</div>
+            <img src="photo_2025-02-03_17-40-00.jpg" alt="VOCO">
+            <div class="tirage">1 из 100</div>
+        </div>
+        <div class="gift" data-id="Doodle" data-bg="#4630C0">
+            <div class="label">Изумрудный</div>
+            <img src="photo_2025-02-04_20-07-09.jpg" alt="VOCO">
+            <div class="tirage">1 из 100</div>
+        </div>
+    </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Установка фона для каждого подарка
         document.querySelectorAll(".gift").forEach(gift => {
             let bgColor = gift.dataset.bg;
             if (bgColor) {
@@ -127,11 +212,10 @@
         });
 
         function generateRandomNumber() {
-            return Math.floor(10000 + Math.random() * 90000);
+            return Math.floor(10000 + Math.random * 90000);
         }
 
         let purchasedGifts = JSON.parse(localStorage.getItem('purchasedGifts')) || [];
-
         document.querySelectorAll(".gift").forEach(gift => {
             gift.addEventListener("click", async function() {
                 let id = gift.dataset.id;
@@ -149,40 +233,24 @@
             alert("Спасибо за покупку! Все подарки хранятся у администратора.");
         });
 
-        // Переключение вкладок
-        const storeTab = document.getElementById('storeTab');
-        const collectionTab = document.getElementById('collectionTab');
-        const storeContainer = document.getElementById('storeContainer');
-        const collectionContainer = document.getElementById('collectionContainer');
+        const storeTab = document.getElementById("storeTab");
+        const tirageTab = document.getElementById("tirageTab");
+        const storeContainer = document.getElementById("storeContainer");
+        const tirageContainer = document.getElementById("tirageContainer");
 
-        storeTab.addEventListener('click', () => {
-            storeTab.classList.add('active');
-            collectionTab.classList.remove('active');
-            storeContainer.style.display = 'flex';
-            collectionContainer.style.display = 'none';
+        storeTab.addEventListener("click", () => {
+            storeTab.classList.add("active");
+            tirageTab.classList.remove("active");
+            storeContainer.style.display = "flex";
+            tirageContainer.style.display = "none";
         });
 
-        collectionTab.addEventListener('click', () => {
-            collectionTab.classList.add('active');
-            storeTab.classList.remove('active');
-            storeContainer.style.display = 'none';
-            collectionContainer.style.display = 'flex';
-            loadCollection();
+        tirageTab.addEventListener("click", () => {
+            storeTab.classList.remove("active");
+            tirageTab.classList.add("active");
+            storeContainer.style.display = "none";
+            tirageContainer.style.display = "flex";
         });
-
-        function loadCollection() {
-            collectionContainer.innerHTML = '';
-            purchasedGifts.forEach(gift => {
-                const giftElement = document.createElement('div');
-                giftElement.classList.add('gift');
-                giftElement.innerHTML = `
-                    <div class="label">${gift.gift_number}</div>
-                    <img src="photo_2025-02-03_17-24-09.jpg" alt="VOCO">
-                    <div class="price">⭐️ ${gift.gift_id}</div>
-                `;
-                collectionContainer.appendChild(giftElement);
-            });
-        }
     </script>
 </body>
 </html>
