@@ -201,6 +201,7 @@
         }
 
         function sendInvoice(name, photo) {
+            // Отправка сообщения боту для генерации инвойса
             Telegram.WebApp.sendData(JSON.stringify({ action: "pay_invoice", name: name, photo: photo }));
         }
 
