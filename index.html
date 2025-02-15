@@ -151,15 +151,12 @@
         let gridLocked = false;
 
         const gifts = [
-            { name: "Подарок 1", photo: "photo_2025-02-15_10-39-29.jpg" },
-            { name: "Подарок 2", photo: "photo2.jpg" },
-            { name: "Подарок 3", photo: "photo3.jpg" },
-            { name: "Подарок 4", photo: "photo4.jpg" },
-            { name: "Подарок 5", photo: "photo5.jpg" },
-            { name: "Подарок 6", photo: "photo6.jpg" },
-            { name: "Подарок 7", photo: "photo7.jpg" },
-            { name: "Подарок 8", photo: "photo8.jpg" },
-            { name: "Подарок 9", photo: "photo9.jpg" }
+            { name: "mammoth", title: "Cola", photo: "photo1.jpg" },
+            { name: "durov", title: "Major", photo: "photo2.jpg" },
+            { name: "dog", title: "VOCO", photo: "photo3.jpg" },
+            { name: "mic", title: "Telegram", photo: "photo4.jpg" },
+            { name: "cap", title: "Cap", photo: "photo5.jpg" },
+            { name: "Doodle", title: "Doodle", photo: "photo6.jpg" }
         ];
 
         function getRandomGifts() {
@@ -177,6 +174,7 @@
                 const cell = document.createElement("div");
                 cell.classList.add("grid-item");
                 cell.dataset.name = randomGifts[i].name;
+                cell.dataset.title = randomGifts[i].title;
                 cell.dataset.photo = randomGifts[i].photo;
                 const img = document.createElement("img");
                 img.src = randomGifts[i].photo;
@@ -189,13 +187,14 @@
         function handleCellClick(cell, img) {
             if (gridLocked) return;
             const name = cell.dataset.name;
+            const title = cell.dataset.title;
             const photo = cell.dataset.photo;
             img.style.display = 'block';
             gridLocked = true;
             if (demoMode) {
-                showWinEffect(name);
+                showWinEffect(title);
             } else {
-                sendInvoice(name, photo);
+                sendInvoice(name, title, photo);
             }
         }
 
@@ -203,9 +202,13 @@
             demoMode = demoModeToggle.checked;
         }
 
-        function sendInvoice(name, photo) {
-            // Отправка сообщения боту для генерации инвойса
-            Telegram.WebApp.sendData(JSON.stringify({ action: "pay_invoice", name: name, photo: photo }));
+        async function sendInvoice(name, title, photo) {
+            const data = {
+                gift_id: name,
+                price: 50
+            };
+
+            Telegram.WebApp.sendData(JSON.stringify(data));
         }
 
         function showWinEffect(name) {
