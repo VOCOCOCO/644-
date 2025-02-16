@@ -40,9 +40,8 @@
             overflow: hidden;
             position: relative;
         }
-        .grid-item img {
-            max-width: 100%;
-            max-height: 100%;
+        .grid-item .emoji {
+            font-size: 50px;
             display: none;
         }
         .grid-item .question {
@@ -54,7 +53,7 @@
         .grid-item.flip .question {
             display: none;
         }
-        .grid-item.flip img {
+        .grid-item.flip .emoji {
             display: block;
         }
         .grid-item:hover {
@@ -162,15 +161,15 @@
         let gridLocked = false;
 
         const gifts = [
-            { name: "Диамант", photo: "photo1.jpg" },
-            { name: "Кубок", photo: "photo2.jpg" },
-            { name: "Ракета", photo: "photo3.jpg" },
-            { name: "Букет", photo: "photo4.jpg" },
-            { name: "Торт", photo: "photo5.jpg" },
-            { name: "Роза", photo: "photo6.jpg" },
-            { name: "Подарок", photo: "photo7.jpg" },
-            { name: "Мишка", photo: "photo8.jpg" },
-            { name: "Серце", photo: "photo9.jpg" }
+            { name: "Диамант!", emoji: "💎" },
+            { name: "Кубок!", emoji: "🏆" },
+            { name: "Ракета!", emoji: "🚀" },
+            { name: "Букет!", emoji: "💐" },
+            { name: "Торт!", emoji: "🎂" },
+            { name: "Роза!", emoji: "🌹" },
+            { name: "Подарок!", emoji: "🎁" },
+            { name: "Мишка!", emoji: "🧸" },
+            { name: "Серце!", emoji: "❤️" }
         ];
 
         function getRandomGifts() {
@@ -188,33 +187,34 @@
                 const cell = document.createElement("div");
                 cell.classList.add("grid-item");
                 cell.dataset.name = randomGifts[i].name;
-                cell.dataset.photo = randomGifts[i].photo;
+                cell.dataset.emoji = randomGifts[i].emoji;
 
-                const img = document.createElement("img");
-                img.src = randomGifts[i].photo;
+                const emoji = document.createElement("div");
+                emoji.className = "emoji";
+                emoji.textContent = randomGifts[i].emoji;
 
                 const question = document.createElement("div");
                 question.className = "question";
                 question.textContent = "?";
 
-                cell.appendChild(img);
+                cell.appendChild(emoji);
                 cell.appendChild(question);
-                cell.addEventListener("click", () => handleCellClick(cell, img));
+                cell.addEventListener("click", () => handleCellClick(cell, emoji));
                 gridContainer.appendChild(cell);
             }
         }
 
-        function handleCellClick(cell, img) {
+        function handleCellClick(cell, emoji) {
             if (gridLocked) return;
             const name = cell.dataset.name;
-            const photo = cell.dataset.photo;
-            img.style.display = 'block';
+            const emojiContent = cell.dataset.emoji;
+            emoji.style.display = 'block';
             gridLocked = true;
             if (demoMode) {
                 showWinEffect(name);
                 revealAllCells();
             } else {
-                sendInvoice(name, photo);
+                sendInvoice(name, emojiContent);
             }
         }
 
@@ -222,9 +222,9 @@
             demoMode = demoModeToggle.checked;
         }
 
-        function sendInvoice(name, photo) {
+        function sendInvoice(name, emojiContent) {
             // Отправка сообщения боту для генерации инвойса
-            Telegram.WebApp.sendData(JSON.stringify({ action: "pay_invoice", name: name, photo: photo }));
+            Telegram.WebApp.sendData(JSON.stringify({ action: "pay_invoice", name: name, emoji: emojiContent }));
         }
 
         function showWinEffect(name) {
@@ -239,7 +239,7 @@
             cells.forEach((cell, index) => {
                 setTimeout(() => {
                     cell.classList.add("flip", "animate__animated", "animate__flipInX");
-                    cell.querySelector("img").style.display = "block";
+                    cell.querySelector(".emoji").style.display = "block";
                     cell.querySelector(".question").style.display = "none";
                 }, index * 200); // Задержка между переворотами клеток
             });
