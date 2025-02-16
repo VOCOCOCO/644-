@@ -45,6 +45,18 @@
             max-height: 100%;
             display: none;
         }
+        .grid-item .question {
+            position: absolute;
+            font-size: 50px;
+            color: #FFFFFF;
+            z-index: 1;
+        }
+        .grid-item.flip .question {
+            display: none;
+        }
+        .grid-item.flip img {
+            display: block;
+        }
         .grid-item:hover {
             transform: scale(1.1);
             background-color: #BB86FC;
@@ -121,6 +133,7 @@
             z-index: 9999;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -149,15 +162,15 @@
         let gridLocked = false;
 
         const gifts = [
-            { name: "Подарок 1", photo: "photo1.jpg" },
-            { name: "Подарок 2", photo: "photo2.jpg" },
-            { name: "Подарок 3", photo: "photo3.jpg" },
-            { name: "Подарок 4", photo: "photo4.jpg" },
-            { name: "Подарок 5", photo: "photo5.jpg" },
-            { name: "Подарок 6", photo: "photo6.jpg" },
-            { name: "Подарок 7", photo: "photo7.jpg" },
-            { name: "Подарок 8", photo: "photo8.jpg" },
-            { name: "Подарок 9", photo: "photo9.jpg" }
+            { name: "Диамант", photo: "photo1.jpg" },
+            { name: "Кубок", photo: "photo2.jpg" },
+            { name: "Ракета", photo: "photo3.jpg" },
+            { name: "Букет", photo: "photo4.jpg" },
+            { name: "Торт", photo: "photo5.jpg" },
+            { name: "Роза", photo: "photo6.jpg" },
+            { name: "Подарок", photo: "photo7.jpg" },
+            { name: "Мишка", photo: "photo8.jpg" },
+            { name: "Серце", photo: "photo9.jpg" }
         ];
 
         function getRandomGifts() {
@@ -176,9 +189,16 @@
                 cell.classList.add("grid-item");
                 cell.dataset.name = randomGifts[i].name;
                 cell.dataset.photo = randomGifts[i].photo;
+
                 const img = document.createElement("img");
                 img.src = randomGifts[i].photo;
+
+                const question = document.createElement("div");
+                question.className = "question";
+                question.textContent = "?";
+
                 cell.appendChild(img);
+                cell.appendChild(question);
                 cell.addEventListener("click", () => handleCellClick(cell, img));
                 gridContainer.appendChild(cell);
             }
@@ -192,6 +212,7 @@
             gridLocked = true;
             if (demoMode) {
                 showWinEffect(name);
+                revealAllCells();
             } else {
                 sendInvoice(name, photo);
             }
@@ -213,6 +234,17 @@
             playAgainButton.style.display = 'block';
         }
 
+        function revealAllCells() {
+            const cells = document.querySelectorAll(".grid-item");
+            cells.forEach((cell, index) => {
+                setTimeout(() => {
+                    cell.classList.add("flip", "animate__animated", "animate__flipInX");
+                    cell.querySelector("img").style.display = "block";
+                    cell.querySelector(".question").style.display = "none";
+                }, index * 200); // Задержка между переворотами клеток
+            });
+        }
+
         function triggerConfetti() {
             const duration = 3 * 1000; // Продолжительность 3 секунды
             const animationEnd = Date.now() + duration;
@@ -229,7 +261,7 @@
                     return clearInterval(interval);
                 }
 
-                const particleCount = 1 * (timeLeft / duration);
+                const particleCount = 50 * (timeLeft / duration);
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
             }, 250);
