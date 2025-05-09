@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -161,120 +160,119 @@
         let demoMode = false;
         let gridLocked = false;
 
-```
-    const gifts = [
-        { name: "Диамант за 100🌟!", emoji: "💎" },
-        { name: "Кубок за 100🌟!", emoji: "🏆" },
-        { name: "Календарь за 350🌟!", emoji: "📆" },
-        { name: "Ничего...", emoji: "😢" },
-        { name: "Торт за 500🌟!", emoji: "🎂" },
-        { name: "Роза за 25🌟!", emoji: "🌹" },
-        { name: "Подарок за 25🌟!", emoji: "🎁" },
-        { name: "Мишка за 15🌟!", emoji: "🧸" },
-        { name: "Серце за 15🌟!", emoji: "❤️" }
-    ];
+        const gifts = [
+            { name: "Диамант за 100🌟!", emoji: "💎" },
+            { name: "Кубок за 100🌟!", emoji: "🏆" },
+            { name: "Календарь за 350🌟!", emoji: "📆" },
+            { name: "Ничего...", emoji: "😢" },
+            { name: "Торт за 500🌟!", emoji: "🎂" },
+            { name: "Роза за 25🌟!", emoji: "🌹" },
+            { name: "Подарок за 25🌟!", emoji: "🎁" },
+            { name: "Мишка за 15🌟!", emoji: "🧸" },
+            { name: "Серце за 15🌟!", emoji: "❤️" }
+        ];
 
-    function getRandomGifts() {
-        const shuffled = gifts.sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, 9);
-    }
-
-    function createGrid() {
-        const randomGifts = getRandomGifts();
-        gridContainer.innerHTML = "";
-        winEffect.style.display = 'none';
-        playAgainButton.style.display = 'none';
-        gridLocked = false;
-        for (let i = 0; i < 9; i++) {
-            const cell = document.createElement("div");
-            cell.classList.add("grid-item");
-            cell.dataset.name = randomGifts[i].name;
-            cell.dataset.emoji = randomGifts[i].emoji;
-
-            const emoji = document.createElement("div");
-            emoji.className = "emoji";
-            emoji.textContent = randomGifts[i].emoji;
-
-            const question = document.createElement("div");
-            question.className = "question";
-            question.textContent = "?";
-
-            cell.appendChild(emoji);
-            cell.appendChild(question);
-            cell.addEventListener("click", () => handleCellClick(cell, emoji));
-            gridContainer.appendChild(cell);
-        }
-    }
-
-    function handleCellClick(cell, emoji) {
-        if (gridLocked) return;
-        const name = cell.dataset.name;
-        const emojiContent = cell.dataset.emoji;
-        emoji.style.display = 'block';
-        gridLocked = true;
-        if (demoMode) {
-            showWinEffect(name);
-            revealAllCells();
-        } else {
-            sendInvoice(name, emojiContent);
-        }
-    }
-
-    function toggleDemoMode() {
-        demoMode = demoModeToggle.checked;
-    }
-
-    function sendInvoice(name, emojiContent) {
-        // Отправка сообщения боту для генерации инвойса
-        Telegram.WebApp.sendData(JSON.stringify({ action: "pay_invoice", name: name, emoji: emojiContent }));
-    }
-
-    function showWinEffect(name) {
-        winEffect.textContent = `Вы выиграли: ${name}`;
-        winEffect.style.display = 'block';
-        triggerConfetti();
-        playAgainButton.style.display = 'block';
-    }
-
-    function revealAllCells() {
-        const cells = document.querySelectorAll(".grid-item");
-        cells.forEach((cell, index) => {
-            setTimeout(() => {
-                cell.classList.add("flip", "animate__animated", "animate__flipInX");
-                cell.querySelector(".emoji").style.display = "block";
-                cell.querySelector(".question").style.display = "none";
-            }, index * 200); // Задержка между переворотами клеток
-        });
-    }
-
-    function triggerConfetti() {
-        const duration = 3 * 1000; // Продолжительность 3 секунды
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-        function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
+        function getRandomGifts() {
+            const shuffled = gifts.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, 9);
         }
 
-        const interval = setInterval(() => {
-            const timeLeft = animationEnd - Date.now();
+        function createGrid() {
+            const randomGifts = getRandomGifts();
+            gridContainer.innerHTML = "";
+            winEffect.style.display = 'none';
+            playAgainButton.style.display = 'none';
+            gridLocked = false;
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement("div");
+                cell.classList.add("grid-item");
+                cell.dataset.name = randomGifts[i].name;
+                cell.dataset.emoji = randomGifts[i].emoji;
 
-            if (timeLeft <= 0) {
-                return clearInterval(interval);
+                const emoji = document.createElement("div");
+                emoji.className = "emoji";
+                emoji.textContent = randomGifts[i].emoji;
+
+                const question = document.createElement("div");
+                question.className = "question";
+                question.textContent = "?";
+
+                cell.appendChild(emoji);
+                cell.appendChild(question);
+                cell.addEventListener("click", () => handleCellClick(cell, emoji));
+                gridContainer.appendChild(cell);
+            }
+        }
+
+        function handleCellClick(cell, emoji) {
+            if (gridLocked) return;
+            const name = cell.dataset.name;
+            const emojiContent = cell.dataset.emoji;
+            emoji.style.display = 'block';
+            gridLocked = true;
+            if (demoMode) {
+                showWinEffect(name);
+                revealAllCells();
+            } else {
+                sendInvoice(name, emojiContent);
+            }
+        }
+
+        function toggleDemoMode() {
+            demoMode = demoModeToggle.checked;
+        }
+
+        function sendInvoice(name, emojiContent) {
+            // Отправка сообщения боту для генерации инвойса
+            Telegram.WebApp.sendData(JSON.stringify({ action: "pay_invoice", name: name, emoji: emojiContent }));
+        }
+
+        function showWinEffect(name) {
+            winEffect.textContent = Вы выиграли: ${name};
+            winEffect.style.display = 'block';
+            triggerConfetti();
+            playAgainButton.style.display = 'block';
+        }
+
+        function revealAllCells() {
+            const cells = document.querySelectorAll(".grid-item");
+            cells.forEach((cell, index) => {
+                setTimeout(() => {
+                    cell.classList.add("flip", "animate__animated", "animate__flipInX");
+                    cell.querySelector(".emoji").style.display = "block";
+                    cell.querySelector(".question").style.display = "none";
+                }, index * 200); // Задержка между переворотами клеток
+            });
+        }
+
+        function triggerConfetti() {
+            const duration = 3 * 1000; // Продолжительность 3 секунды
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
             }
 
-            const particleCount = 50 * (timeLeft / duration);
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-        }, 250);
+            const interval = setInterval(() => {
+                const timeLeft = animationEnd - Date.now();
 
-        setTimeout(() => {
-            clearInterval(interval);
-            confetti.reset();
-        }, duration);
-    }
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
 
-    createGrid();
-</script>
+                const particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                confetti.reset();
+            }, duration);
+        }
+
+        createGrid();
+    </script>
 </body>
 </html>
